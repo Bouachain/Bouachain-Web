@@ -541,3 +541,10 @@ p{
     color: #000000;
     
 }
+#qrcode{
+    background-color: #E0FFFF;
+    border-radius: 10px;
+    height: 200px;
+    width: 200px;
+    margin-bottom: 20px;
+}

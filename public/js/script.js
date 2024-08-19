@@ -17,7 +17,6 @@ $(document).ready(function() {
         var textToCopy = $('#payWallet').text();
         
         navigator.clipboard.writeText(textToCopy).then(function() {
-            // Success feedback
             $('#copyButton').text('Copied!');
             setTimeout(function() {
                 $('#copyButton').html('Copy <i class="bi bi-clipboard2-check"></i>');
@@ -52,11 +51,12 @@ $('#fetchButton').on('click', function () {
         $.ajax({
             url: `/callback/${currency}`,
             method: 'GET',
-            dataType: 'json', // Expect JSON response
+            dataType: 'json', 
             success: function (response) {
                 console.log(response);
                 if (response.address) {
                     $('#payWallet').html(`${response.address}`);
+                    $('#qrcode').attr('src', `${response.url}`);
                 } else if (response.error) {
                     $('#payWallet').html(`Error Generating Wallet.`);
                 } else {
