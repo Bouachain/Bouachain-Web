@@ -31,29 +31,36 @@
           <div class="amount">
             <input
               type="number"
+              min="10000"
               class="number form-control"
+              value="10000"
               name=""
-              id=""
+              id="totalBoua"
               placeholder="min order 1000 tokens"
             />
             <p style="font-size: 12px;" class="pt-2">1 Boucoin = 0.0005 USD</p>
           </div>
           <h6 class="mt-3">Currency</h6>
           <div class="currency">
-            <select class="form-select form-control" aria-label="Default select example">
-                <option selected>  Ethereum</option>
-                <option value="1"> Avax</option>
-                <option value="1"> Smart Chain</option>
-                <option value="2"> Bitcoin</option>
-                <option value="3"> Atom</option>
+            <select class="form-select form-control" aria-label="Default select example" id="currency">
+                <option value="ETH" selected>  Ethereum</option>
+                <option value="SOL"> Solana</option>
+                <option value="LTC"> Litecoin</option>
+                <option value="BNB"> Binance Coin</option>
+                <option value="TRX"> TRON</option>
+                <option value="BUSD"> Binance USD (BEP20)</option>
+                <option value="USDT"> Tether (TRC20)</option>
+                <option value="DASH"> DASH</option>
               </select>
             
           </div>
           <hr />
+          <p id="callbackAddress"></p>
           <hr />
           <a
             class="btn btn-secondary btn-style-2 form-control"
             style="background-color: black"
+            id="fetchButton"
             >Buy Presale</a
           >
           <hr />
@@ -66,3 +73,24 @@
     </div>
   </div>
 </section>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Make Payment</h5>
+      </div>
+      <div class="modal-body">
+        <p>Make a Payment of: <span id="payAmmount"></span> <span id="paymentCurrency"></span></p>
+        <p>To Recieve: <span id="recieveAmmount">----</span> Bouacoin</p>
+        <div class="d-flex">
+          <p class="pt-2 mb-0 pb-0" style="font-size: 10px;">
+              <span id="payWallet">Sample Text to Copy</span>
+          </p>
+          <button id="copyButton" class="ms-auto btn btn-style-1" style="background-color: black; color: white;">
+              Copy <i class="bi bi-clipboard2-check"></i>
+          </button>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
