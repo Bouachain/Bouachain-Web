@@ -551,3 +551,6 @@ p{
 .red{
     color: red;
 }
+input{
+    box-shadow: none !important;
+}
