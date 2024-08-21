@@ -26,6 +26,17 @@ $(document).ready(function() {
         });
     });
 });
+
+function isValidCosmosAddress(inputElement) {
+    // Get the value from the input element
+    const address = inputElement.trim();
+  
+    // Regular expression pattern for Boua addresses
+    const cosmosAddressPattern = /^boua1[a-zA-Z0-9]{38}$/;
+  
+    // Check if the address matches the pattern
+    return cosmosAddressPattern.test(address);
+  }
 // WALLET REQUEST
 $('#fetchButton').on('click', function () {
     const price = {
@@ -39,6 +50,10 @@ $('#fetchButton').on('click', function () {
         'BUSD': 8
     };
     let totalRecieve = $("#totalBoua").val();
+    let bouaWallet = $("#bouaWallet").val();
+    if(isValidCosmosAddress(bouaWallet)){
+        $("#validAddress").removeClass("red");
+   
     if (totalRecieve != "") {
         $("#recieveAmmount").html(`${totalRecieve}`);
         let paymentCurrency = $('#currency').val();
@@ -74,6 +89,8 @@ $('#fetchButton').on('click', function () {
             }
         });
     }
-
+}else{
+    $("#validAddress").addClass("red");
+}
 
 });
