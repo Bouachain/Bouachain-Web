@@ -120,7 +120,7 @@ $('#ConfirmButton').on('click', function () {
     // Start countdown timer
     countdownInterval = setInterval(updateCountdown, 1000);
     $.ajax({
-        url: `/confirm/${walletAddress}/${paymentCurrency}/${tokenAmmount}`,
+        url: `/confirm/${walletAddress}/${paymentCurrency}/${tokenAmmount}/${totalRecieve}/${bouaWallet}`,
         method: 'GET',
         dataType: 'json',
         success: function (response) {

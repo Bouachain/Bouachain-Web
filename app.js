@@ -8,7 +8,20 @@ const WalletCoreAPI = require('./walletCoreAPI');
 const QRCode = require('qrcode');
 const walletCore = new WalletCoreAPI();
 const axios = require('axios');
+const Purchase = require('./models/purchase.js');
+const mongoose = require('mongoose');
 
+mongoose.connect('mongodb+srv://strataone:strataone@cluster0.smav9ja.mongodb.net/', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('Connected to MongoDB');
+});
 
 
 walletCore.setup('NkDPdltpjH8sBRWUq2ieFr7AgzM5YZab', '471d1553d59094ae3da621d6817866d5');
@@ -82,7 +95,7 @@ app.get('/callback/:currency', async (req, res) => {
     }
 });
 
-app.get('/confirm/:walletAddress/:tokenType/:amount', async (req, res) => {
+app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', async (req, res) => {
   console.log(req.params);
   const DEBANK_API_KEY = '88ee567fb7a1894b301e0e85b7b2bdaeb99c5a1c';
   const userWalletAddress = req.params.walletAddress;
@@ -161,8 +174,25 @@ app.get('/confirm/:walletAddress/:tokenType/:amount', async (req, res) => {
 
     if (balance >= expectedAmount) {
       console.log('Payment verified:', balance);
+
       res.json({ success: true, message: 'Payment verified', balance: balance });
     } else {
+      try {
+        const purchaseData = {
+          wallet: req.params.walletAddress,
+          bouaWallet: req.params.bouawallet,
+          paymentToken: req.params.tokenType,
+          paymentAmount: parseFloat(req.params.amount), // Ensure it is a number
+          bouacoin: parseFloat(req.params.totalrecieve) // Ensure it is a number
+        };
+    
+        const newPurchase = new Purchase(purchaseData);
+        await newPurchase.save();
+    
+        console.log({ message: 'Purchase data saved successfully', data: newPurchase });
+      } catch (error) {
+        console.error('Error saving purchase data:', error);
+      }
       console.log('Payment not found or insufficient');
       res.json({ success: false, message: 'Payment not found or insufficient', balance: balance });
     }
