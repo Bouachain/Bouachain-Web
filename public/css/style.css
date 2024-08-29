@@ -554,3 +554,35 @@ p{
 input{
     box-shadow: none !important;
 }
+
+
+#verification-container {
+    text-align: center;
+}
+
+#spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #000000;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#status-text {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+#countdown {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #555;
+}
