@@ -5,7 +5,8 @@ $(document).ready(function () {
 
     $(window).scroll(function () {
         if ($(this).scrollTop() > navbarHeight) {
-            navbar.css('background-color', 'rgba(255, 255, 255, 1)');
+            navbar.css('background-color', '#000000');
+
         } else {
             navbar.css('background-color', 'transparent');
         }

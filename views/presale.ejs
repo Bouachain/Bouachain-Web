@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-8">
-        <h1 style="font-size: 70px">
+        <h1 style="font-size: 45px">
           Participate in our presale of <span>Bouacoin</span>.
         </h1>
         <p>Follow the guidelines below to participate</p>
@@ -18,18 +18,13 @@
       <div class="col-md-6">
         <div class="brand-snippet">
           <div class="d-flex mb-3">
-            <p style="font-weight: 700">Bouacoin Presale</p>
-            <!-- <button
-              class="ms-auto btn btn-secondary"
-              s
-              style="background-color: black"
-            >
-              Connect wallet
-            </button> -->
+            <p class="bold-7">Bouacoin Presale</p>
           </div>
           <h6>Boucoin Wallet Address</h6>
-          <input type="text" id="bouaWallet" class="form-control"  style="border: 2px solid black;" name="bouaWallet">
+          <input type="text" id="bouaWallet" class="form-control bouaWallet"  style="border: 2px solid black;" name="bouaWallet">
           <p id="validAddress" class=""  style="font-size: 12px;">Input a valid Bouacoin address</p>
+          <hr />
+         
           <h6 class="mt-2">Amount</h6>
           <div class="amount">
             <input
@@ -43,6 +38,8 @@
             />
             <p style="font-size: 12px;" class="pt-2">1 Boucoin = 0.0005 USD</p>
           </div>
+          <hr />
+
           <h6 class="mt-3">Currency</h6>
           <div class="currency">
             <select class="form-select form-control" aria-label="Default select example" id="currency">
@@ -61,8 +58,7 @@
           <p id="callbackAddress"></p>
           <hr />
           <a
-            class="btn btn-secondary btn-style-2 form-control"
-            style="background-color: black"
+            class="btn btn-2 form-control"
             id="fetchButton"
             >Buy Presale</a
           >
@@ -76,7 +72,7 @@
     </div>
   </div>
 </section>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade  presale-modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -90,19 +86,19 @@
           <p class="pt-2 mb-0 pb-0" style="font-size: 10px;">
               <span id="payWallet">Sample Text to Copy</span>
           </p>
-          <button id="copyButton" class="ms-auto btn btn-style-1" style="background-color: black; color: white;">
+          <button id="copyButton" class="ms-auto btn btn-1">
               Copy <i class="bi bi-clipboard2-check"></i>
           </button>
           
       </div>
       <hr>
-          <button class="btn btn-style-1 form-control" style="background-color: black; color: white; box-shadow: none !important;" id="ConfirmButton">I have made the payment!</button>
+          <button class="btn btn-2 form-control" id="ConfirmButton">I have made the payment!</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="myModalTwo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelTwo" aria-hidden="true">
+<div class="modal fade  presale-modal" id="myModalTwo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelTwo" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -111,7 +107,7 @@
       <div class="modal-body">
         <div id="verification-container">
           <div id="spinner"></div>
-          <div id="status-text">Verifying payment</div>
+          <div id="status-text">Verifying payment...</div>
           <div id="countdown"></div>
        </div>
   
