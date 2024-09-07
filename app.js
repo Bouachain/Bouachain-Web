@@ -12,7 +12,7 @@ const Purchase = require('./models/purchase.js');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
-const BOT_TOKEN = '7252595923:AAEdaQHWrlm1SLB3uZwTW4U2a5qV5kv7ohA';
+// const BOT_TOKEN = '';
 
 mongoose.connect('mongodb+srv://strataone:strataone@cluster0.smav9ja.mongodb.net/', {
   useNewUrlParser: true,
@@ -205,30 +205,30 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
 });
 
 
-app.post('/auth/telegram', (req, res) => {
-  const { hash, ...userData } = req.body;
-console.log(req);
-  const dataCheckString = Object.keys(userData)
-    .sort()
-    .map(key => `${key}=${userData[key]}`)
-    .join('\n');
+// app.post('/auth/telegram', (req, res) => {
+//   const { hash, ...userData } = req.body;
+// console.log(req);
+//   const dataCheckString = Object.keys(userData)
+//     .sort()
+//     .map(key => `${key}=${userData[key]}`)
+//     .join('\n');
 
-  const secretKey = crypto.createHash('sha256')
-    .update(BOT_TOKEN)
-    .digest();
+//   const secretKey = crypto.createHash('sha256')
+//     .update(BOT_TOKEN)
+//     .digest();
 
-  const hmac = crypto.createHmac('sha256', secretKey)
-    .update(dataCheckString)
-    .digest('hex');
+//   const hmac = crypto.createHmac('sha256', secretKey)
+//     .update(dataCheckString)
+//     .digest('hex');
 
-  if (hmac === hash) {
-    // Authentication successful
-    res.json({ success: true, user: userData });
-  } else {
-    // Authentication failed
-    res.status(401).json({ success: false });
-  }
-});
+//   if (hmac === hash) {
+//     // Authentication successful
+//     res.json({ success: true, user: userData });
+//   } else {
+//     // Authentication failed
+//     res.status(401).json({ success: false });
+//   }
+// });
 
 
 
