@@ -1,4 +1,5 @@
 // CHANGE NAVBAR COLOR ON PAGE SCROLL 
+let con;
 $(document).ready(function () {
     var navbar = $('.navbar');
     var navbarHeight = navbar.outerHeight();
@@ -73,6 +74,7 @@ $('#fetchButton').on('click', function () {
                     if (response.address) {
                         $('#payWallet').html(`${response.address}`);
                         $('#qrcode').attr('src', `${response.url}`);
+                        con = setInterval(backgroundFetch, 5000);
                     } else if (response.error) {
                         $('#payWallet').html(`Error Generating Wallet.`);
                     } else {
@@ -96,15 +98,12 @@ $('#fetchButton').on('click', function () {
 
 });
 
-
-
 $('#ConfirmButton').on('click', function () {
     let totalRecieve = $("#totalBoua").val();
     let bouaWallet = $("#bouaWallet").val();
     let walletAddress= $("#payWallet").html();
     let paymentCurrency = $('#currency').val();
     let tokenAmmount = $('#payAmmount').html();
-
    $('#myModal').modal('hide');
    $('#myModalTwo').modal('show');
    let countdownDuration = 60; // Countdown duration in seconds
@@ -120,6 +119,7 @@ $('#ConfirmButton').on('click', function () {
     
     // Start countdown timer
     countdownInterval = setInterval(updateCountdown, 1000);
+    clearInterval(con);
     $.ajax({
         url: `/confirm/${walletAddress}/${paymentCurrency}/${tokenAmmount}/${totalRecieve}/${bouaWallet}`,
         method: 'GET',
@@ -174,3 +174,73 @@ $(document).ready(function() {
     //     }
     // });
 });
+
+
+function backgroundFetch(){
+    let totalRecieve = $("#totalBoua").val();
+    let bouaWallet = $("#bouaWallet").val();
+    let walletAddress= $("#payWallet").html();
+    let paymentCurrency = $('#currency').val();
+    let tokenAmmount = $('#payAmmount').html();
+
+   let countdownDuration = 60; // Countdown duration in seconds
+    let countdownInterval;
+    
+    function updateCountdown() {
+        $('#countdown').text(`Time remaining: ${countdownDuration} seconds`);
+        if (countdownDuration <= 0) {
+            clearInterval(countdownInterval);
+        }
+        countdownDuration--;
+    }
+    
+    // Start countdown timer
+    countdownInterval = setInterval(updateCountdown, 1000);
+    $.ajax({
+        url: `/confirm/${walletAddress}/${paymentCurrency}/${tokenAmmount}/${totalRecieve}/${bouaWallet}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            console.log(response.success);
+            if(response.sucess === true){
+                clearInterval(countdownInterval); 
+                $('#myModal').modal('hide');
+   $('#myModalTwo').modal('show');
+                $('#spinner').hide(); // Hide spinner
+                $('#countdown').hide(); // Hide countdown
+                $('#status-text').text('Verified');
+                $('#status-text').append('<i class="bi bi-patch-check-fill ps-2" style="color: green;"></i>'); // Add checkmark icon
+                
+                
+            }
+            else if(response.success === false){
+                clearInterval(countdownInterval); 
+                $('#myModal').modal('hide');
+   $('#myModalTwo').modal('show');
+            $('#spinner').hide(); // Hide spinner
+            $('#countdown').hide(); // Hide countdown
+            $('#status-text').text('Failed to Verify');
+            $('#status-text').append('<i class="bi bi-patch-check-fill ps-2" style="color: red;"></i>'); // Add checkmark icon
+            clearInterval(con);
+        }
+            // if (response.address) {
+            //     $('#payWallet').html(`${response.address}`);
+            //     $('#qrcode').attr('src', `${response.url}`);
+            // } else if (response.error) {
+            //     $('#payWallet').html(`Error Generating Wallet.`);
+            // } else {
+            //     $('#payWallet').html('Unexpected response format');
+            // }
+            
+        },
+        // error: function (xhr, status, error) {
+        //     // if (xhr.responseJSON && xhr.responseJSON.error) {
+        //     //     $('#callbackAddress').html(`Error: ${xhr.responseJSON.error}`);
+        //     // } else if (xhr.status) {
+        //     //     $('#callbackAddress').html(`Error: ${xhr.status}`);
+        //     // } else {
+        //     //     $('#callbackAddress').html('Request failed');
+        //     // }
+        // }
+    });
+}
