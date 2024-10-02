@@ -22,53 +22,53 @@ mongoose.connect('mongodb+srv://strataone:strataone@cluster0.smav9ja.mongodb.net
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.once('open', function () {
   console.log('Connected to MongoDB');
 });
 
 
 walletCore.setup('sjnpD7mrZCXfwbclFo3hQ6Kz4GI8ek1J', '626049e76ce0085aeb9c8de1b2bdbaad');
 async function theCallback(currency) {
-    try {
-        const callbackAddress = await walletCore.getCallbackAddress(currency);
-        // console.log('Callback Address:', callbackAddress);
-        return callbackAddress
-    } catch (error) {
-        console.error('Error:', error.message);
-        return error.message
-    }
+  try {
+    const callbackAddress = await walletCore.getCallbackAddress(currency);
+    // console.log('Callback Address:', callbackAddress);
+    return callbackAddress
+  } catch (error) {
+    console.error('Error:', error.message);
+    return error.message
+  }
 }
 
 function walletAddressToQRCode(walletAddress) {
-    return new Promise((resolve, reject) => {
-      // Generate a unique filename
-      const filename = `qr-${uuidv4()}.svg`;
-      const filepath = path.join(__dirname, '/public/qr-codes', filename);
+  return new Promise((resolve, reject) => {
+    // Generate a unique filename
+    const filename = `qr-${uuidv4()}.svg`;
+    const filepath = path.join(__dirname, '/public/qr-codes', filename);
 
-      // Ensure the directory exists
-      const dir = path.dirname(filepath);
-      if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
+    // Ensure the directory exists
+    const dir = path.dirname(filepath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    // Generate QR code
+    QRCode.toString(walletAddress, { type: 'svg' }, (err, svg) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Write SVG to file
+        fs.writeFile(filepath, svg, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(filename);
+          }
+        });
       }
-  
-      // Generate QR code
-      QRCode.toString(walletAddress, { type: 'svg' }, (err, svg) => {
-        if (err) {
-          reject(err);
-        } else {
-          // Write SVG to file
-          fs.writeFile(filepath, svg, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(filename);
-            }
-          });
-        }
-      });
     });
-  }
-  
+  });
+}
+
 
 app.set("view engine", "ejs");
 app.set("layout", "layouts/layout");
@@ -78,24 +78,24 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 
 app.get('/callback/:currency', async (req, res) => {
-    const currency = req.params.currency;
-    try {
-        const callbackAddress = await theCallback(currency);
-        async function generateQRCode() {
-            try {
-              const walletAddress = callbackAddress.address;
-              const qrCodePath = await walletAddressToQRCode(walletAddress);
-            //   console.log(`QR code generated: ${qrCodePath}`); 
-              return qrCodePath;
-            } catch (error) {
-              console.error('Error generating QR code:', error);
-            }
-          }
-         const imgUrl = await generateQRCode();
-        res.json({"currency": currency, "address": callbackAddress.address, "url": "/qr-codes/" + imgUrl});
-    } catch (error) {
-        res.json({"Error": error.message});
+  const currency = req.params.currency;
+  try {
+    const callbackAddress = await theCallback(currency);
+    async function generateQRCode() {
+      try {
+        const walletAddress = callbackAddress.address;
+        const qrCodePath = await walletAddressToQRCode(walletAddress);
+        //   console.log(`QR code generated: ${qrCodePath}`); 
+        return qrCodePath;
+      } catch (error) {
+        console.error('Error generating QR code:', error);
+      }
     }
+    const imgUrl = await generateQRCode();
+    res.json({ "currency": currency, "address": callbackAddress.address, "url": "/qr-codes/" + imgUrl });
+  } catch (error) {
+    res.json({ "Error": error.message });
+  }
 });
 
 app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', async (req, res) => {
@@ -161,6 +161,21 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
               return parseFloat(token.amount);
             }
             break;
+          case 'BTC':
+            if (token.chain === 'btc' && token.symbol === 'BTC') {
+              return parseFloat(token.amount);
+            }
+            break;
+          case 'BTT':
+            if (token.chain === 'btt' && token.symbol === 'BTT') {
+              return parseFloat(token.amount);
+            }
+            break;
+          case 'DOGE':
+            if (token.chain === 'doge' && token.symbol === 'DOGE') {
+              return parseFloat(token.amount);
+            }
+            break;
         }
       }
 
@@ -188,10 +203,10 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
           paymentAmount: parseFloat(req.params.amount), // Ensure it is a number
           bouacoin: parseFloat(req.params.totalrecieve) // Ensure it is a number
         };
-    
+
         const newPurchase = new Purchase(purchaseData);
         await newPurchase.save();
-    
+
         console.log({ message: 'Purchase data saved successfully', data: newPurchase });
       } catch (error) {
         console.error('Error saving purchase data:', error);
@@ -242,5 +257,5 @@ app.use("/", require("./routes/index"));
 
 
 app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
-    console.log("SERVER STARTED");
+  console.log("SERVER STARTED");
 })

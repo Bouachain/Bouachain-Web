@@ -49,7 +49,10 @@ $('#fetchButton').on('click', function () {
         'TRX': 5,
         'USDT': 6,
         'DASH': 7,
-        'BUSD': 8
+        'BUSD': 8,
+        'BTC': 9,
+        'BTT': 10,
+        'DOGE': 11
     };
     let totalRecieve = $("#totalBoua").val();
     let bouaWallet = $("#bouaWallet").val();
