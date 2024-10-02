@@ -27,7 +27,7 @@ db.once('open', function() {
 });
 
 
-walletCore.setup('NkDPdltpjH8sBRWUq2ieFr7AgzM5YZab', '471d1553d59094ae3da621d6817866d5');
+walletCore.setup('sjnpD7mrZCXfwbclFo3hQ6Kz4GI8ek1J', '626049e76ce0085aeb9c8de1b2bdbaad');
 async function theCallback(currency) {
     try {
         const callbackAddress = await walletCore.getCallbackAddress(currency);
@@ -100,7 +100,7 @@ app.get('/callback/:currency', async (req, res) => {
 
 app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', async (req, res) => {
   console.log(req.params);
-  const DEBANK_API_KEY = '88ee567fb7a1894b301e0e85b7b2bdaeb99c5a1c';
+  const DEBANK_API_KEY = '4e3d811fc66644d3688e1e56cd75b5a29c79cc81';
   const userWalletAddress = req.params.walletAddress;
   const tokenType = req.params.tokenType.toLowerCase();
   const expectedAmount = parseFloat(req.params.amount);
