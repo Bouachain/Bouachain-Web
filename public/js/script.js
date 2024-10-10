@@ -30,6 +30,14 @@ $(document).ready(function() {
         let tokenAmmount =(coinAmount * price[paymentCurrency] * 2);
         $('#theRA').text(tokenAmmount);
     });
+    $('#totalBoua').on('input propertychange paste focus blur click keyup keydown keypress mousedown mouseup select', function() {
+        let coinAmount = $(this).val();
+        let paymentCurrency = $('#currency').val();
+        let tokenAmmount = ((coinAmount * 0.5) / price[paymentCurrency]).toFixed(6);
+        $('#theBuyAmount').val(tokenAmmount);
+        $('#theRU').text(coinAmount * 0.5);
+        $('#theRA').text(coinAmount);
+    });
 });
 
 $(document).ready(function () {
