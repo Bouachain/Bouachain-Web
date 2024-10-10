@@ -24,23 +24,61 @@
           <input type="text" id="bouaWallet" class="form-control bouaWallet"  style="border: 2px solid black;" name="bouaWallet">
           <p id="validAddress" class=""  style="font-size: 12px;">Input a valid Bouacoin address</p>
           <hr />
-         
-          <h6 class="mt-2">Amount</h6>
+          <h6 class="mt-2">Buy Amount</h6>
           <div class="amount">
+            <div class="row">
+              <div class="col-7">
+                <input
+              type="number"
+              min="0"
+              class="number form-control"
+              name=""
+              id="theBuyAmount"
+              placeholder="min order 500 USD"
+            />
+              </div>
+              <div class="col-5">
+                <div class="currency">
+                  <select class="form-select form-control" aria-label="Default select example" id="currency">
+                      <option value="ETH" selected>  Ethereum</option>
+                      <option value="SOL"> Solana</option>
+                      <option value="LTC"> Litecoin</option>
+                      <option value="BNB"> Binance Coin</option>
+                      <option value="TRX"> TRON</option>
+                      <option value="BUSD"> Binance USD (BEP20)</option>
+                      <option value="USDT"> Tether (TRC20)</option>
+                      <option value="DASH"> DASH</option>
+                      <option value="BTC"> BITCOIN</option>
+                      <option value="BTT"> BIT TORRENT</option>
+                      <option value="DOGE"> DOGE</option>
+                    </select>
+                  
+                </div>
+              </div>
+            </div>
+            
+            <p style="font-size: 12px;" class="pt-2 mb-0">1 Boucoin = 0.5 USD</p>
+            <p style="font-size: 12px;" class="mb-0">Recieve Amount = <span  id="theRA">0</span> Boua</p>
+            <p style="font-size: 12px;" class="mb-0">Amount in USD = <span  id="theRU">0</span> USD</p>
+            <p style="font-size: 12px;" class="red" id="min-amount-no"></p>
+          </div>
+          <hr/>
+          <!-- <h6 class="mt-2">Number of Bouacoins</h6> -->
+          <div class="amount d-none">
             <input
               type="number"
-              min="10000"
+              min="1000"
               class="number form-control"
-              value="10000"
+              value="0"
               name=""
               id="totalBoua"
-              placeholder="min order 1000 tokens"
+              placeholder="min order 500 USD"
             />
-            <p style="font-size: 12px;" class="pt-2">1 Boucoin = 0.0005 USD</p>
+            <p style="font-size: 12px;" class="pt-2">1 Boucoin = 0.5 USD</p>
           </div>
-          <hr />
+          <!-- <hr /> -->
 
-          <h6 class="mt-3">Currency</h6>
+          <!-- <h6 class="mt-3">Currency</h6>
           <div class="currency">
             <select class="form-select form-control" aria-label="Default select example" id="currency">
                 <option value="ETH" selected>  Ethereum</option>
@@ -57,7 +95,7 @@
               </select>
             
           </div>
-          <hr />
+          <hr /> -->
           <p id="callbackAddress"></p>
           <hr />
           <a

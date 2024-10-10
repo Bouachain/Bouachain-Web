@@ -602,7 +602,17 @@ p {
     border-radius: 10px;
     background-color: #000000;
 }
-
+#theBuyAmount::placeholder {
+    color: rgba(212, 212, 212, 0.253);
+  }
+#theBuyAmount{
+    border: 2px solid #ffffff;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 12px;
+    height: 30px;
+    box-shadow: none !important;
+}
 .amount>.number {
     border: 2px solid #ffffff;
     background-color: #000000;

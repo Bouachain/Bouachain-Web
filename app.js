@@ -11,6 +11,7 @@ const axios = require('axios');
 const Purchase = require('./models/purchase.js');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const cron = require('node-cron');
 
 // const BOT_TOKEN = '';
 
@@ -75,7 +76,62 @@ app.set("layout", "layouts/layout");
 app.use(expressEjsLayout);
 app.use(express.static(path.join(__dirname, "/public")));
 
+let price = {
+  'ETH': 1,
+  'SOL': 2,
+  'LTC': 3,
+  'BNB': 4,
+  'TRX': 5,
+  'USDT': 6,
+  'DASH': 7,
+  'BUSD': 8,
+  'BTC': 9,
+  'BTT': 10,
+  'DOGE': 11
+};
 
+// Function to fetch real-time prices from CoinGecko
+async function fetchPrices() {
+  try {
+    const response = await axios.get('https://api.coingecko.com/api/v3/simple/price', {
+      params: {
+        ids: 'ethereum,solana,litecoin,binancecoin,tron,tether,dash,binance-usd,bitcoin,bittorrent,dogecoin',
+        vs_currencies: 'usd'
+      }
+    });
+
+    const data = response.data;
+
+    price = {
+      'ETH': data.ethereum.usd,
+      'SOL': data.solana.usd,
+      'LTC': data.litecoin.usd,
+      'BNB': data.binancecoin.usd,
+      'TRX': data.tron.usd,
+      'USDT': data.tether.usd,
+      'DASH': data.dash.usd,
+      'BUSD': data['binance-usd'].usd,
+      'BTC': data.bitcoin.usd,
+      'BTT': data.bittorrent.usd,
+      'DOGE': data.dogecoin.usd
+    };
+
+    console.log('Prices updated successfully');
+  } catch (error) {
+    console.error('Error fetching prices:', error.message);
+  }
+}
+
+// Schedule price update every 24 hours
+cron.schedule('0 0 * * *', fetchPrices);
+
+// Fetch prices immediately on server start
+fetchPrices();
+
+// Route to get the latest prices
+app.get('/prices', (req, res) => {
+  res.json(price);
+});
 
 app.get('/callback/:currency', async (req, res) => {
   const currency = req.params.currency;

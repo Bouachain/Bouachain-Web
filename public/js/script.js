@@ -1,5 +1,37 @@
 // CHANGE NAVBAR COLOR ON PAGE SCROLL 
 let con;
+// const price = {
+//     'ETH': 1,
+//     'SOL': 2,
+//     'LTC': 3,
+//     'BNB': 4,
+//     'TRX': 5,
+//     'USDT': 6,
+//     'DASH': 7,
+//     'BUSD': 8,
+//     'BTC': 9,
+//     'BTT': 10,
+//     'DOGE': 11
+// };
+let price;
+
+$(document).ready(function() {
+    $('#theBuyAmount').on('input propertychange paste focus blur click keyup keydown keypress mousedown mouseup select', function() {
+        let coinAmount = $(this).val();
+        let paymentCurrency = $('#currency').val();
+        let tokenAmmount =(coinAmount * price[paymentCurrency] * 2);
+        $('#theRA').text(tokenAmmount);
+        $('#theRU').text(coinAmount * price[paymentCurrency] );
+        $('#totalBoua').val(tokenAmmount)
+    });
+    $('#currency').on('input propertychange paste focus blur click keyup keydown keypress mousedown mouseup select', function() {
+        let coinAmount = $('#theBuyAmount').val();
+        let paymentCurrency = $('#currency').val();
+        let tokenAmmount =(coinAmount * price[paymentCurrency] * 2);
+        $('#theRA').text(tokenAmmount);
+    });
+});
+
 $(document).ready(function () {
     var navbar = $('.navbar');
     var navbarHeight = navbar.outerHeight();
@@ -13,6 +45,23 @@ $(document).ready(function () {
         }
     });
 });
+
+$(document).ready(function() {
+    $.ajax({
+        url: '/prices',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            price = data;
+            //console.log(price);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching prices:', error);
+            // $('#prices').html('<p>Error fetching prices. Please try again later.</p>');
+        }
+    });
+});
+
 // COPY BUTTON 
 $(document).ready(function () {
     $('#copyButton').on('click', function () {
@@ -41,29 +90,18 @@ function isValidCosmosAddress(inputElement) {
 }
 // WALLET REQUEST
 $('#fetchButton').on('click', function () {
-    const price = {
-        'ETH': 1,
-        'SOL': 2,
-        'LTC': 3,
-        'BNB': 4,
-        'TRX': 5,
-        'USDT': 6,
-        'DASH': 7,
-        'BUSD': 8,
-        'BTC': 9,
-        'BTT': 10,
-        'DOGE': 11
-    };
+    
     let totalRecieve = $("#totalBoua").val();
     let bouaWallet = $("#bouaWallet").val();
     if (isValidCosmosAddress(bouaWallet)) {
         $("#validAddress").removeClass("red");
 
-        if (totalRecieve != "") {
+        if (totalRecieve != 0) {
+            $('#min-amount-no').text('')
             $("#recieveAmmount").html(`${totalRecieve}`);
             let paymentCurrency = $('#currency').val();
             $("#paymentCurrency").html(`${paymentCurrency}`);
-            let tokenAmmount = ((totalRecieve * 0.001) / price[paymentCurrency]).toFixed(6);
+            let tokenAmmount = ((totalRecieve * 0.5) / price[paymentCurrency]).toFixed(6);
             $('#payAmmount').html(`${tokenAmmount}`);
 
             $('#myModal').modal('show');
@@ -77,7 +115,7 @@ $('#fetchButton').on('click', function () {
                     if (response.address) {
                         $('#payWallet').html(`${response.address}`);
                         $('#qrcode').attr('src', `${response.url}`);
-                        con = setInterval(backgroundFetch, 5000);
+                         con = setInterval(backgroundFetch, 5000);
                     } else if (response.error) {
                         $('#payWallet').html(`Error Generating Wallet.`);
                     } else {
@@ -94,6 +132,8 @@ $('#fetchButton').on('click', function () {
                     }
                 }
             });
+        }else{
+            $('#min-amount-no').text('Minimum Buy is 100 USD')
         }
     } else {
         $("#validAddress").addClass("red");
@@ -129,8 +169,9 @@ $('#ConfirmButton').on('click', function () {
         dataType: 'json',
         success: function (response) {
             console.log(response.success);
-            if(response.sucess === true){
+            if(response.success === true){
                 clearInterval(countdownInterval); 
+                clearInterval(con);
                 $('#spinner').hide(); // Hide spinner
                 $('#countdown').hide(); // Hide countdown
                 $('#status-text').text('Verified');
@@ -138,6 +179,7 @@ $('#ConfirmButton').on('click', function () {
             }
             else if(response.success === false){
                 clearInterval(countdownInterval); 
+                clearInterval(con);
             $('#spinner').hide(); // Hide spinner
             $('#countdown').hide(); // Hide countdown
             $('#status-text').text('Failed to Verify');
@@ -213,19 +255,12 @@ function backgroundFetch(){
                 $('#countdown').hide(); // Hide countdown
                 $('#status-text').text('Verified');
                 $('#status-text').append('<i class="bi bi-patch-check-fill ps-2" style="color: green;"></i>'); // Add checkmark icon
-                
-                
+                clearInterval(con);
             }
             else if(response.success === false){
                 clearInterval(countdownInterval); 
-                $('#myModal').modal('hide');
-   $('#myModalTwo').modal('show');
-            $('#spinner').hide(); // Hide spinner
-            $('#countdown').hide(); // Hide countdown
-            $('#status-text').text('Failed to Verify');
-            $('#status-text').append('<i class="bi bi-patch-check-fill ps-2" style="color: red;"></i>'); // Add checkmark icon
-            clearInterval(con);
-        }
+                clearInterval(con);
+            }
             // if (response.address) {
             //     $('#payWallet').html(`${response.address}`);
             //     $('#qrcode').attr('src', `${response.url}`);
