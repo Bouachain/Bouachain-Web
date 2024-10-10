@@ -155,17 +155,15 @@ app.get('/callback/:currency', async (req, res) => {
 });
 
 app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', async (req, res) => {
-  console.log(req.params);
   const DEBANK_API_KEY = '4e3d811fc66644d3688e1e56cd75b5a29c79cc81';
   const userWalletAddress = req.params.walletAddress;
   const tokenType = req.params.tokenType.toLowerCase();
   const expectedAmount = parseFloat(req.params.amount);
 
-  // Function to get wallet balances
   async function checkPayment(walletAddress, tokenType) {
     try {
       const response = await axios.get(
-        `https://pro-openapi.debank.com/v1/user/token_list?id=${walletAddress}`,
+        `https://pro-openapi.debank.com/v1/user/token_list?id=${walletAddress}&chain_id=${tokenType}`,
         {
           headers: {
             'AccessKey': DEBANK_API_KEY
@@ -173,102 +171,54 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
         }
       );
 
+      console.log('API Response:', response.data);
+
       const balances = response.data;
 
       for (let token of balances) {
-        switch (tokenType) {
-          case 'ETH':
-            if (token.chain === 'eth' && token.symbol === 'ETH') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'SOL':
-            if (token.chain === 'sol' && token.symbol === 'SOL') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'LTC':
-            if (token.chain === 'ltc' && token.symbol === 'LTC') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'BNB':
-            if (token.chain === 'bsc' && token.symbol === 'BNB') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'TRX':
-            if (token.chain === 'trx' && token.symbol === 'TRX') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'BUSD':
-            if (token.chain === 'bsc' && token.symbol === 'USDT') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'USDT':
-            if (token.chain === 'eth' && token.symbol === 'USDT') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'DASH':
-            if (token.chain === 'dash' && token.symbol === 'DASH') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'BTC':
-            if (token.chain === 'btc' && token.symbol === 'BTC') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'BTT':
-            if (token.chain === 'btt' && token.symbol === 'BTT') {
-              return parseFloat(token.amount);
-            }
-            break;
-          case 'DOGE':
-            if (token.chain === 'doge' && token.symbol === 'DOGE') {
-              return parseFloat(token.amount);
-            }
-            break;
+        if (token.chain === tokenType.toLowerCase() && token.symbol === tokenType.toUpperCase()) {
+          return parseFloat(token.amount);
         }
       }
 
       return 0; // If no balance is found, return 0
     } catch (error) {
-      console.error('Error checking payment:', error);
+      console.error('Error checking payment:', error.response ? error.response.data : error.message);
       return 0;
     }
   }
 
-  // Function to verify the payment
   async function verifyPayment() {
-    const balance = await checkPayment(userWalletAddress, tokenType);
+    try {
+      const balance = await checkPayment(userWalletAddress, tokenType);
 
-    if (balance >= expectedAmount) {
-      console.log('Payment verified:', balance);
+      if (balance >= expectedAmount) {
+        console.log('Payment verified:', balance);
+        try {
+          const purchaseData = {
+            wallet: req.params.walletAddress,
+            bouaWallet: req.params.bouawallet,
+            paymentToken: req.params.tokenType,
+            paymentAmount: parseFloat(req.params.amount),
+            bouacoin: parseFloat(req.params.totalrecieve)
+          };
 
-      res.json({ success: true, message: 'Payment verified', balance: balance });
-    } else {
-      try {
-        const purchaseData = {
-          wallet: req.params.walletAddress,
-          bouaWallet: req.params.bouawallet,
-          paymentToken: req.params.tokenType,
-          paymentAmount: parseFloat(req.params.amount), // Ensure it is a number
-          bouacoin: parseFloat(req.params.totalrecieve) // Ensure it is a number
-        };
+          const newPurchase = new Purchase(purchaseData);
+          await newPurchase.save();
 
-        const newPurchase = new Purchase(purchaseData);
-        await newPurchase.save();
+          console.log('Purchase data saved successfully', newPurchase);
+        } catch (error) {
+          console.error('Error saving purchase data:', error);
+        }
+        res.json({ success: true, message: 'Payment verified', balance: balance });
 
-        console.log({ message: 'Purchase data saved successfully', data: newPurchase });
-      } catch (error) {
-        console.error('Error saving purchase data:', error);
+      } else {
+        console.log('Payment not found or insufficient');
+        res.json({ success: false, message: 'Payment not found or insufficient', balance: balance });
       }
-      console.log('Payment not found or insufficient');
-      res.json({ success: false, message: 'Payment not found or insufficient', balance: balance });
+    } catch (error) {
+      console.error('Error in verifyPayment:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
 

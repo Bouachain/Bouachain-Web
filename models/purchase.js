@@ -13,7 +13,6 @@ const PurchaseSchema = new Schema({
     paymentToken: {
         type: String,
         required: true,
-        unique: true
     },
     paymentAmount: {
         type: Number,
@@ -25,7 +24,7 @@ const PurchaseSchema = new Schema({
     },
     confired: {
         type: Boolean,
-        default: true
+        default: false
     },
     sent: {
         type: Boolean,
