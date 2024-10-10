@@ -176,6 +176,7 @@ $('#ConfirmButton').on('click', function () {
                 $('#countdown').hide(); // Hide countdown
                 $('#status-text').text('Verified');
                 $('#status-text').append('<i class="bi bi-patch-check-fill ps-2" style="color: green;"></i>'); // Add checkmark icon
+                $('#rrd').text('You will receive your coins in less than an Hour!');
             }
             else if(response.success === false){
                 clearInterval(countdownInterval); 
@@ -256,6 +257,7 @@ function backgroundFetch(){
                 $('#status-text').text('Verified');
                 $('#status-text').append('<i class="bi bi-patch-check-fill ps-2" style="color: green;"></i>'); // Add checkmark icon
                 clearInterval(con);
+                $('#rrd').text('You will receive your coins in less than an Hour!');
             }
             else if(response.success === false){
                 clearInterval(countdownInterval); 
