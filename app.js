@@ -12,8 +12,11 @@ const Purchase = require('./models/purchase.js');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const cron = require('node-cron');
-
+const { DirectSecp256k1HdWallet } = require("@cosmjs/proto-signing");
+const { SigningStargateClient, StargateClient } = require("@cosmjs/stargate");
+require('dotenv').config();
 // const BOT_TOKEN = '';
+
 
 mongoose.connect('mongodb+srv://strataone:strataone@cluster0.smav9ja.mongodb.net/', {
   useNewUrlParser: true,
@@ -26,6 +29,86 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
   console.log('Connected to MongoDB');
 });
+
+
+
+// async function triggerSmartContract(bouaWallet, amount) {
+//   const rpcEndpoint = "https://RPC.bouachain.com";  // Replace with your Bouachain RPC endpoint
+//   const mnemonic = "your mnemonic here"; // Replace with your wallet mnemonic
+//   const contractAddress = "boua1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrs6gd5gr"; // Replace with your smart contract address
+
+//   const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix: 'boua' });
+//   const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);
+//   const account = (await wallet.getAccounts())[0];
+
+//   const msg = {
+//     distribute_tokens: {
+//       recipient: bouaWallet, // The recipient's Bouachain address
+//       amount: amount,        // Amount to send (in smallest units, e.g., ubouacoin)
+//     },
+//   };
+
+//   const fee = {
+//     amount: [{ denom: "bouacoin", amount: "1000" }], // Adjust the fee if needed
+//     gas: "200000",  // Adjust the gas limit based on the contract execution
+//   };
+
+//   try {
+//     const result = await client.execute(account.address, contractAddress, msg, fee, "Distribute Tokens");
+//     assertIsBroadcastTxSuccess(result);
+//     console.log("Tokens distributed successfully!");
+//     return true;
+//   } catch (error) {
+//     console.error("Failed to distribute tokens:", error);
+//     return false;
+//   }
+// }
+
+async function transferTokens(recipientAddress, amount) {
+  // Configuration
+  const rpcEndpoint = "https://rpc.bouachain.com"; // Replace with actual RPC endpoint
+  const privateKey = process.env.PRIVATEKEY;
+  const contractAddress = "boua14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s9appq2";
+
+  try {
+    // Create a wallet instance
+    const wallet = await DirectSecp256k1HdWallet.fromKey(
+      Buffer.from(privateKey, "hex"),
+      "boua" // Replace with the actual prefix for Bouachain addresses
+    );
+
+    // Get the sender's address
+    const [account] = await wallet.getAccounts();
+    const senderAddress = account.address;
+
+    // Create a signing client
+    const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);
+
+    // Prepare the message for the smart contract
+    const msg = {
+      transfer: {
+        recipient: recipientAddress,
+        amount: amount.toString(),
+      },
+    };
+
+    // Execute the contract
+    const result = await client.execute(
+      senderAddress,
+      contractAddress,
+      msg,
+      "auto", // fee
+      "Transferring tokens" // memo
+    );
+
+    console.log("Transfer successful!");
+    console.log("Transaction hash:", result.transactionHash);
+    return result;
+  } catch (error) {
+    console.error("Error transferring tokens:", error);
+    throw error;
+  }
+}
 
 
 walletCore.setup('sjnpD7mrZCXfwbclFo3hQ6Kz4GI8ek1J', '626049e76ce0085aeb9c8de1b2bdbaad');
@@ -210,6 +293,11 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
         } catch (error) {
           console.error('Error saving purchase data:', error);
         }
+
+        // await triggerSmartContract(req.params.bouawallet, req.params.totalrecieve);
+        transferTokens(req.params.bouawallet, req.params.totalrecieve)
+          .then((result) => console.log(result))
+          .catch((error) => console.error(error));
         res.json({ success: true, message: 'Payment verified', balance: balance });
 
       } else {
