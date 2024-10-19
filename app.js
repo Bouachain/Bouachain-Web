@@ -18,10 +18,7 @@ require('dotenv').config();
 // const BOT_TOKEN = '';
 
 
-mongoose.connect('mongodb+srv://strataone:strataone@cluster0.smav9ja.mongodb.net/', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(process.env.MONGODB_URI);
 
 const db = mongoose.connection;
 
@@ -244,6 +241,9 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
   const expectedAmount = parseFloat(req.params.amount);
 
   async function checkPayment(walletAddress, tokenType) {
+    if(tokenType == 'bnb'){
+      tokenType = 'bsc';
+    }
     try {
       const response = await axios.get(
         `https://pro-openapi.debank.com/v1/user/token_list?id=${walletAddress}&chain_id=${tokenType}`,

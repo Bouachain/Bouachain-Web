@@ -104,7 +104,7 @@ $('#fetchButton').on('click', function () {
     if (isValidCosmosAddress(bouaWallet)) {
         $("#validAddress").removeClass("red");
 
-        if (totalRecieve != 0) {
+        if (totalRecieve > 0) {
             $('#min-amount-no').text('')
             $("#recieveAmmount").html(`${totalRecieve}`);
             let paymentCurrency = $('#currency').val();
@@ -128,6 +128,7 @@ $('#fetchButton').on('click', function () {
                         $('#payWallet').html(`Error Generating Wallet.`);
                     } else {
                         $('#payWallet').html('Unexpected response format');
+                      //  console.log(response);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -155,6 +156,7 @@ $('#ConfirmButton').on('click', function () {
     let walletAddress= $("#payWallet").html();
     let paymentCurrency = $('#currency').val();
     let tokenAmmount = $('#payAmmount').html();
+    $('#status-text').text('Verifying payment...')
    $('#myModal').modal('hide');
    $('#myModalTwo').modal('show');
    let countdownDuration = 60; // Countdown duration in seconds
