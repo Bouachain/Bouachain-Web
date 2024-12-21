@@ -342,7 +342,42 @@ app.get('/confirm/:walletAddress/:tokenType/:amount/:totalrecieve/:bouawallet', 
 
 
 
+  async function checkPayment() {
+    const DEBANK_API_KEY = '4e3d811fc66644d3688e1e56cd75b5a29c79cc81';
+  const tokenType = 'eth';
+  const walletAddress = '0x7D1AddEB1d42F2345ED87B6c36DF2b092AD3a376';
+    if(tokenType == 'bnb'){
+      tokenType = 'bsc';
+    }
+    try {
+      const response = await axios.get(
+        `https://pro-openapi.debank.com/v1/user/token_list?id=${walletAddress}&chain_id=${tokenType}`,
+        {
+          headers: {
+            'AccessKey': DEBANK_API_KEY
+          }
+        }
+      );
 
+      console.log('API Response:', response.data);
+
+      const balances = response.data;
+
+      for (let token of balances) {
+        if (token.chain === tokenType.toLowerCase() && token.symbol === tokenType.toUpperCase()) {
+          console.log(parseFloat(token.amount))
+          return parseFloat(token.amount);
+        }
+      }
+
+      return 0; // If no balance is found, return 0
+    } catch (error) {
+      console.error('Error checking payment:', error.response ? error.response.data : error.message);
+      return 0;
+    }
+  }
+
+  // checkPayment()
 app.use("/", require("./routes/index"));
 
 
