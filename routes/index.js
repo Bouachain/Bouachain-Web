@@ -11,5 +11,8 @@ router.get("/brand", (req, res) => {
 router.get("/presale", (req, res) => {
     res.render("presale");
 });
+router.get("/airdrop", (req, res) => {
+    res.render("airdrop");
+});
 
 module.exports = router;
